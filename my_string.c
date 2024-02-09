@@ -20,7 +20,7 @@ MY_STRING my_string_init_default(void) {
 
     if (pString != NULL) {
         pString->size = 0;
-        pString->capacity = 1;
+        pString->capacity = 7;
         pString->data = (char*)malloc(sizeof(int) * pString->capacity);
 
         if (pString->data == NULL) {
@@ -34,14 +34,12 @@ MY_STRING my_string_init_default(void) {
 
 void my_string_destroy(MY_STRING* phMy_string) {
     my_string* pString = (my_string*)*phMy_string;
-    if (pString != NULL) {
-        //free(pString->data);
+    if (pString->data != NULL) {
+        free(pString->data);
+        printf("We got to here.\n");
         free(pString);
-        *phMy_string = NULL;
-    } else {
-        printf("WRONG PLACE TO GO\n");
-        *phMy_string = NULL;
-    }
+    } 
+    *phMy_string = NULL;
 }
 
 MY_STRING my_string_init_c_string(const char* c_string) {
@@ -56,7 +54,7 @@ MY_STRING my_string_init_c_string(const char* c_string) {
             free(pString);
             return NULL;
         }
-        pString->data = (char*)c_string;
+        strcpy(pString->data, (char*)c_string);
 
     }
     return (MY_STRING)pString;
