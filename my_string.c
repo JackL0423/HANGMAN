@@ -6,6 +6,7 @@
 #include <string.h>
 #include "my_string.h"
 
+#define GROWTH_RATE 2
 
 struct My_string {
     int size;
@@ -36,11 +37,11 @@ void my_string_destroy(MY_STRING* phMy_string) {
     my_string* pString = (my_string*)*phMy_string;
     if (pString->data != NULL) {
         free(pString->data);
-        printf("We got to here.\n");
         free(pString);
     } 
     *phMy_string = NULL;
 }
+
 
 MY_STRING my_string_init_c_string(const char* c_string) {
     my_string* pString = (my_string*)malloc(sizeof(my_string));
@@ -88,6 +89,50 @@ int my_string_compare(MY_STRING hLeft_string, MY_STRING hRight_string) {
     }
 }
 
-// of left is smaller than right return <0
-// if left is greater than right return 0
-// if equal return >0
+
+Status my_string_extraction(MY_STRING hMy_string, FILE* fp) {
+    my_string* pString = (my_string*)hMy_string;    
+    char word[100];
+    char* temp;
+    int i;
+
+    while (fscanf(fp, "%s", word) != EOF) {
+        
+        if (strlen(word) >= my_string_get_capacity(hMy_string)) {
+            temp = malloc(sizeof(char) * pString->capacity * GROWTH_RATE);
+            if (temp == NULL) {
+                return FAILURE;
+            }
+
+            for (i=0; i < pString->size; i++) {
+                temp[i] = pString->data[i];
+            }
+            free(pString->data);
+            strcpy(temp, word);
+            pString->data = temp;
+            pString->capacity *= GROWTH_RATE;
+            pString->size = strlen(word);
+
+        }
+        strcpy(pString->data, word);
+        
+        return SUCCESS;
+
+    }
+
+
+    return FAILURE;
+}
+
+
+Status my_string_insertion(MY_STRING hMy_string, FILE* fp) {
+    my_string* pString = (my_string*)hMy_string;
+
+    if (pString->data == NULL) {
+        return FAILURE;
+    }
+    fputs(pString->data, fp);
+    
+    return SUCCESS;
+}
+

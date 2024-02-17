@@ -3,18 +3,21 @@
 #include "my_string.h"
 
 int main() {
-    MY_STRING hMy_string1 = NULL;
-    MY_STRING hMy_string2 = NULL;
+    MY_STRING hMy_string = NULL;
+    FILE* fp;
 
-    hMy_string1 = my_string_init_c_string("there");
-    hMy_string2 = my_string_init_c_string("there");
+    hMy_string = my_string_init_default();
+    fp = fopen("dictionary.txt", "r");
+    if (fp == NULL) {
+        printf("Error opening file.\n");
+    }
 
-    printf("size: %d\n", my_string_get_size(hMy_string1));
-    printf("capacity: %d\n", my_string_get_capacity(hMy_string1));
+    while(my_string_extraction(hMy_string, fp)) {
+        my_string_insertion(hMy_string, stdout);
+        printf("\n");
+    }
 
-    printf("Result: %d\n", my_string_compare(hMy_string1, hMy_string2));
-
-    my_string_destroy(&hMy_string1);
-    my_string_destroy(&hMy_string2);
+    my_string_destroy(&hMy_string);
+    fclose(fp);
     return 0;
 }
