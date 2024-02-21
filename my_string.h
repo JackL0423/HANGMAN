@@ -5,7 +5,7 @@
 #ifndef HANGMAN_MY_STRING_H
 #define HANGMAN_MY_STRING_H
 
-#include "status.h"
+#include "./header/status.h"
 
 typedef void* MY_STRING;
 
@@ -69,6 +69,56 @@ Status my_string_extraction(MY_STRING hMy_string, FILE* fp);
 // Function will return SUCCESS if it successfully writes the string and
 // FAILURE otherwise.
 Status my_string_insertion(MY_STRING hMy_string, FILE* fp);
+
+
+//Precondition: hMy_string is the handle to a valid My_string object.
+//Postcondition: If successful, places the character item at the end of the
+// string and returns SUCCESS. If the string does not have enough room and
+// cannot resize to accomodate the new character then the operation fails
+// and FAILURE is returned. The resize operation will attempt to amortize
+// the cost of a resize by making the string capacity somewhat larger than
+// it was before (up to 2 times bigger).
+Status my_string_push_back(MY_STRING hMy_string, char item);
+
+
+//Precondition: hMy_string is the handle to a valid My_string object.
+//Postcondition: Removes the last character of a string in constant time.
+// Guaranteed to not cause a resize operation of the internal data. Returns
+// SUCCESS on success and FAILURE if the string is empty.
+Status my_string_pop_back(MY_STRING hMy_string);
+
+
+//Precondition: hMy_string is the handle to a valid My_string object.
+//Postcondition: Returns the address of the character located at the given
+// index if the index is in bounds but otherwise returns NULL. This address
+// is not usable as a c-string since the data is not NULL terminated and is
+// intended to just provide access to the element at that index.
+char* my_string_at(MY_STRING hMy_string, int index);
+
+
+//Precondition: hMy_string is the handle to a valid My_string object.
+//Postcondition: Returns the address of the first element of the string object
+// for use as a c-string. The resulting c-string is guaranteed to be NULL
+// terminated and the memory is still maintained by the string object though
+// the NULL is not actually counted as part of the string (in size).
+char* my_string_c_str(MY_STRING hMy_string);
+
+
+//Precondition: hResult and hAppend are handles to valid My_string objects.
+//Postcondition: hResult is the handle of a string that contains the original
+// hResult object followed by the hAppend object concatenated together. This
+// function should guarantee no change to the hAppend object and return
+// SUCCESS if they operation is successful and FAILURE if the hResult object
+// is unable to accomodate the characters in the hAppend string perhaps
+// because of a failed resize operation. On FAILURE, no change to either
+// string should be made.
+Status my_string_concat(MY_STRING hResult, MY_STRING hAppend);
+
+
+//Precondition: hMy_string is the handle to a valid My_string object.
+//Postcondition: Returns an enumerated type with value TRUE if the string
+// is empty and FALSE otherwise.
+Boolean my_string_empty(MY_STRING hMy_string);
 
 
 #endif //HANGMAN_MY_STRING_H

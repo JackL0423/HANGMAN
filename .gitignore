@@ -1,2 +1,5 @@
 /.vscode
-*.o
+main.o
+my_stringLib/my_string.o
+my_stringLib/my_string.d
+string_driver

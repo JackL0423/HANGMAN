@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "my_string.h"
+#include "./my_string.h"
 
 #define GROWTH_RATE 2
 
@@ -134,5 +134,75 @@ Status my_string_insertion(MY_STRING hMy_string, FILE* fp) {
     fputs(pString->data, fp);
     
     return SUCCESS;
+}
+
+
+Status my_string_push_back(MY_STRING hMy_string, char item) {
+    my_string* pString = (my_string*)hMy_string;
+
+    if (my_string_empty(hMy_string)) {
+        return FAILURE;
+    }
+
+    return FAILURE;
+}
+
+
+char* my_string_at(MY_STRING hMy_string, int index) {
+    my_string* pString = (my_string*)hMy_string;
+    if (my_string_empty(hMy_string)) {
+        return NULL;
+    }
+    if (index > my_string_get_size(hMy_string)) {
+        return NULL;
+    }
+    char c = pString->data[index];
+    return (char*)c;
+}
+
+
+char* my_string_c_str(MY_STRING hMy_string) {
+    my_string* pString = (my_string*)hMy_string;
+    if (my_string_empty(hMy_string)) {
+        return NULL;
+    }
+
+    return my_string_at(hMy_string, 0);
+}
+
+
+Status my_string_concat(MY_STRING hResult, MY_STRING hAppend) {
+    my_string* pResult = (my_string*)hResult;
+    my_string* pAppend = (my_string*)hAppend;
+    char* temp;
+    int indx;
+
+    if (my_string_empty(hResult) || my_string_empty(hAppend)) {
+        return FAILURE;
+    }
+
+    if ((my_string_get_size(hResult)+my_string_get_size(hAppend)) >= my_string_get_capacity(hResult)) {
+        temp = (char*)malloc(sizeof(char) * pResult->capacity * GROWTH_RATE);
+        if (temp == NULL) {
+            return FAILURE;
+        }
+
+        for (indx = 0; indx < pResult->size; indx++) {
+            temp[indx] = pResult->data[indx];
+        }
+        free(pResult->data);
+
+        pResult->data = temp;
+    }
+
+    strcat(pResult->data, pAppend->data);
+
+    return SUCCESS;
+}
+
+
+Boolean my_string_empty(MY_STRING hMy_string) {
+    my_string* pString = (my_string*)hMy_string;
+    return (pString->data == NULL) ? TRUE : FALSE;
 }
 

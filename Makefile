@@ -1,20 +1,30 @@
-all: string_driver
+BINARY = string_driver
+CODEDIRS =. my_stringLib
+INCDIRS =. /header/	 
 
-string_driver: main.o my_string.o
-	gcc -o string_driver main.o my_string.o
+CC = gcc
+DEPFLAGS =-MP -MD
+CFLAGS = -Wall -Wextra -g $(foreach D, $(INCDIRS), -I$(D)) $(DEPFLAGS)
 
+CFILES = $(foreach D, $(CODEDIRS), $(wildcard $(D)/*.c))
+OBJECTS = $(patsubst %.c, %.o, $(CFILES))
+DEPFILES = $(patsubst %.c, %.d, $(CFILES))
 
-main.o: main.c
-	gcc -c main.c
+all: $(BINARY)
 
+$(BINARY): $(OBJECTS)
+	$(CC) -o $@ $^
 
-my_string.o: my_string.c
-	gcc -c my_string.c
-
+%.o:%.c 
+	$(CC) $(CFLAGS) -c -o $@ $^
 
 run:
 	./string_driver
 
 clean:
-	@echo "cleaning all .o files and app"
-	rm *.o string_driver
+	@echo "cleaning all .o files, string_driver, and .d files"
+	rm -rf $(BINARY) $(OBJECTS) $(DEPFILES)
+
+diff:
+	@git status
+	@git diff --stat
