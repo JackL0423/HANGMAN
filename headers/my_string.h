@@ -5,7 +5,7 @@
 #ifndef HANGMAN_MY_STRING_H
 #define HANGMAN_MY_STRING_H
 
-#include "./header/status.h"
+#include "status.h"
 
 typedef void* MY_STRING;
 

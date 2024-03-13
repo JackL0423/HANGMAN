@@ -1,6 +1,10 @@
 BINARY = string_driver
-CODEDIRS =. my_stringLib
-INCDIRS =. /header/	 
+CODEDIRS =. my_stringLib	 
+
+UNIT_TEST = unit_test 
+TESTDIRS =. test_strings
+
+INCDIRS =. /headers/
 
 CC = gcc
 DEPFLAGS =-MP -MD
@@ -10,9 +14,14 @@ CFILES = $(foreach D, $(CODEDIRS), $(wildcard $(D)/*.c))
 OBJECTS = $(patsubst %.c, %.o, $(CFILES))
 DEPFILES = $(patsubst %.c, %.d, $(CFILES))
 
-all: $(BINARY)
+TESTFILES = $(foreach D, $(TESTDIRS), $(wildcard $(D)/*.c))
+TESTOBJS = $(patsubst %.c, %.o, $(TESTFILES))
+TESTDEP = $(patsubst %.c, %.d, $(TESTFILES))
 
-$(BINARY): $(OBJECTS)
+
+all: $(UNIT_TEST)
+
+$(UNIT_TEST): $(OBJECTS) $(TESTOBJS)
 	$(CC) -o $@ $^
 
 %.o:%.c 
@@ -21,9 +30,10 @@ $(BINARY): $(OBJECTS)
 run:
 	./string_driver
 
+
 clean:
 	@echo "cleaning all .o files, string_driver, and .d files"
-	rm -rf $(BINARY) $(OBJECTS) $(DEPFILES)
+	rm -rf $(UNIT_TEST) $(OBJECTS) $(DEPFILES) $(TESTOBJS)  $(TESTDEP) test_output.txt
 
 diff:
 	@git status

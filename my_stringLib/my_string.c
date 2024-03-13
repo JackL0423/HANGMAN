@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "./my_string.h"
+#include "./headers/my_string.h"
 
 #define GROWTH_RATE 2
 
@@ -22,7 +22,7 @@ MY_STRING my_string_init_default(void) {
     if (pString != NULL) {
         pString->size = 0;
         pString->capacity = 7;
-        pString->data = (char*)malloc(sizeof(int) * pString->capacity);
+        pString->data = (char*)malloc(sizeof(char) * pString->capacity);
 
         if (pString->data == NULL) {
             free(pString);
@@ -35,7 +35,7 @@ MY_STRING my_string_init_default(void) {
 
 void my_string_destroy(MY_STRING* phMy_string) {
     my_string* pString = (my_string*)*phMy_string;
-    if (pString->data != NULL) {
+    if (pString != NULL) {
         free(pString->data);
         free(pString);
     } 
@@ -77,16 +77,19 @@ int my_string_get_size(MY_STRING hMy_string) {
 int my_string_compare(MY_STRING hLeft_string, MY_STRING hRight_string) {
     my_string* pLeft_string = (my_string*)hLeft_string;
     my_string* pRight_string = (my_string*)hRight_string;
+    int flag;
 
     if (strcmp(pLeft_string->data, pRight_string->data) < 0) {
-        return -1;
+        flag =  -1;
     }
     else if (strcmp(pLeft_string->data, pRight_string->data) > 0) {
-        return 0;
+        flag =  1;
     }
     else {
-        return 1;
+        flag = 0;
     }
+
+    return flag;
 }
 
 
@@ -98,7 +101,7 @@ Status my_string_extraction(MY_STRING hMy_string, FILE* fp) {
 
     while (fscanf(fp, "%s", word) != EOF) {
         
-        if (strlen(word) >= my_string_get_capacity(hMy_string)) {
+        if ((int)strlen(word) >= my_string_get_capacity(hMy_string)) {
             temp = malloc(sizeof(char) * pString->capacity * GROWTH_RATE);
             if (temp == NULL) {
                 return FAILURE;
@@ -139,12 +142,29 @@ Status my_string_insertion(MY_STRING hMy_string, FILE* fp) {
 
 Status my_string_push_back(MY_STRING hMy_string, char item) {
     my_string* pString = (my_string*)hMy_string;
+    char* temp;
+    int i;
 
     if (my_string_empty(hMy_string)) {
         return FAILURE;
     }
 
-    return FAILURE;
+    if (pString->size++ >= pString->capacity) {     //  Check if string needs resize.
+        temp = malloc(sizeof(char) * pString->capacity * GROWTH_RATE);
+        if (temp == NULL) {
+            return FAILURE;
+        }
+
+        for (i=0; i < pString->size; i++) {
+            temp[i] = pString->data[i];
+        }
+        free(pString->data);
+        pString->data = temp;
+        pString->capacity *= GROWTH_RATE;
+    }
+    pString->data[pString->size++] = item;
+
+    return SUCCESS;
 }
 
 
@@ -156,13 +176,12 @@ char* my_string_at(MY_STRING hMy_string, int index) {
     if (index > my_string_get_size(hMy_string)) {
         return NULL;
     }
-    char c = pString->data[index];
-    return (char*)c;
+
+    return &pString->data[index];
 }
 
 
 char* my_string_c_str(MY_STRING hMy_string) {
-    my_string* pString = (my_string*)hMy_string;
     if (my_string_empty(hMy_string)) {
         return NULL;
     }
