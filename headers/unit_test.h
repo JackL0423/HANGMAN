@@ -38,4 +38,10 @@ Status test_jlight_string_push_back_returns_string(char* buffer, int size);
 Status test_jlight_string_my_string_at_returns_e(char* buffer, int size);
 
 Status test_jlight_string_c_str_returns_string(char* buffer, int size);
+
+Status test_jlight_string_my_string_assignment_returns_copy(char* buffer, int size);
+
+Status test_jlight_string_my_string_init_copy_returns_copy(char* buffer, int size);
+
+Status test_jlight_string_my_string_swapy_returns_copy(char* buffer, int size);
 #endif//UNIT_TEST_H

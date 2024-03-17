@@ -5,10 +5,10 @@
 #include "./headers/unit_test.h"
 #include "./headers/my_string.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* const argv[]) {
 
     const char BANNER_STR[81] = "*********************************************************************";
-    const int TEST_COUNT = 15;
+    const int TEST_COUNT = 19;
     int indx;
     char buffer[500];
     int success_count = 0;
@@ -30,7 +30,10 @@ int main(int argc, char* argv[]) {
         test_jlight_string_insertion_writes_file,
         test_jlight_string_push_back_returns_string,
         test_jlight_string_my_string_at_returns_e,
-        test_jlight_string_c_str_returns_string
+        test_jlight_string_c_str_returns_string,
+        test_jlight_string_my_string_assignment_returns_copy,
+        test_jlight_string_my_string_init_copy_returns_copy,
+        test_jlight_string_my_string_swapy_returns_copy
         };
 
     int number_of_functions = sizeof(tests)/sizeof(tests[0]);

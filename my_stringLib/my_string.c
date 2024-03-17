@@ -225,3 +225,76 @@ Boolean my_string_empty(MY_STRING hMy_string) {
     return (pString->data == NULL) ? TRUE : FALSE;
 }
 
+
+Status my_string_assignment(MY_STRING hLeft, MY_STRING hRight) {
+    my_string* pStringLeft = (my_string*)hLeft;
+    my_string* pStringRight = (my_string*)hRight;
+    char* temp;
+    int indx;
+    //  Make hleft a deep copy of hRight
+    if (my_string_get_size(hRight) >= my_string_get_capacity(hLeft)) {
+        //  resize left
+        temp = (char*)malloc(sizeof(char) * pStringRight->capacity);
+        if (temp == NULL) {
+            return FAILURE;
+        }
+        for (indx=0; indx<pStringRight->size; indx++) {
+            temp[indx]= pStringRight->data[indx];
+        }
+        free(pStringLeft->data);
+        pStringLeft->data = temp;
+        pStringLeft->capacity = pStringRight->capacity;
+    }
+
+    for (indx=0; indx<pStringLeft->size; indx++) {
+        pStringLeft->data[indx] = pStringRight->data[indx];
+    }
+    pStringLeft->size = pStringRight->size;
+
+    return SUCCESS;
+}
+
+
+MY_STRING my_string_init_copy(MY_STRING hMy_string) {
+    my_string* pString = (my_string*)hMy_string;
+    my_string* temp = (my_string*)malloc(sizeof(my_string));
+    int indx;
+    if (temp != NULL) {
+        temp->size = pString->size;
+        temp->capacity = pString->capacity;
+        temp->data = (char*)malloc(sizeof(char) * temp->capacity);
+        for (indx=0; indx<temp->size; indx++) {
+            temp->data[indx] = pString->data[indx];
+        }
+    }
+
+    return (MY_STRING)temp;
+}
+
+
+void my_string_swap(MY_STRING hLeft, MY_STRING hRight) {
+    MY_STRING pTemp = my_string_init_default();
+    //pTemp = hLeft;
+    my_string_assignment(pTemp, hLeft);
+    //hLeft = hRight;
+    my_string_assignment(hLeft, hRight);
+    //hRight = pTemp;
+    my_string_assignment(hRight, pTemp);
+
+    free(pTemp);
+}
+
+Status get_word_key_value(MY_STRING current_word_family, MY_STRING new_key, MY_STRING word, char guess) {
+    int indx;
+    while (!my_string_empty(new_key)) {
+        my_string_pop_back(new_key);
+    }
+
+    for (indx=0; indx<my_string_get_size(word); indx++) {
+        if (!my_string_push_back(new_key, *my_string_at(word, indx) == guess ? guess : *my_string_at(current_word_family, indx))) {
+            return FAILURE;
+        }
+
+        return SUCCESS;
+    }
+}

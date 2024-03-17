@@ -316,6 +316,7 @@ Status test_jlight_string_push_back_returns_string(char* buffer, int size) {
         strncpy(buffer, "PASSED", size);
         status = SUCCESS;
     }
+    my_string_destroy(&hString);
 
     return status;
 }
@@ -336,21 +337,112 @@ Status test_jlight_string_my_string_at_returns_e(char* buffer, int size) {
         strncpy(buffer, "PASSED", size);
         status = SUCCESS;
     }
+    my_string_destroy(&hString);
 
     return status;
 }
 
 Status test_jlight_string_c_str_returns_string(char* buffer, int size) {
     MY_STRING hString = NULL;
+    MY_STRING hTestResult = NULL;
     Status status;
 
     hString = my_string_init_c_string("Special String");
 
-    hTestResult = my_string_init_c_string(*my_string_c_str(hString));
+    hTestResult = my_string_init_c_string(my_string_c_str(hString));
+    //printf("\n hTestResult: %s", my_string_c_str(hTestResult));
 
     printf("    + Testing my_string_c_str:\n");
     printf("      - String passed was 'Special String' and expect it to be returned: ");
     if (my_string_compare(hString, hTestResult) != 0) {
-
+        strncpy(buffer, "FAILED", size);
+        status = FAILURE;
+    } else {
+        strncpy(buffer, "PASSED", size);
+        status = SUCCESS;
     }
+    my_string_destroy(&hString);
+    //my_string_destroy(&hTestResult);
+    
+    return status;
+}
+
+Status test_jlight_string_my_string_assignment_returns_copy(char* buffer, int size) {
+    MY_STRING hLeft = NULL;
+    MY_STRING hRight = NULL;
+    Status status;
+
+    hLeft = my_string_init_c_string("I am the left");
+    hRight = my_string_init_c_string("I am the one to copy");
+    
+
+    printf("    + Testing my_string_assignment:\n");
+    printf("      - Expecting copy of 'I am the original' to be made: ");
+    if (my_string_assignment(hLeft, hRight) == FAILURE) {
+        strncpy(buffer, "FAILED", size);
+        status = FAILURE;
+    } 
+    else {
+        strncpy(buffer, "PASSED", size);
+        status = SUCCESS;
+    }
+    my_string_destroy(&hRight);
+    my_string_destroy(&hLeft);
+
+    return status;
+}
+
+Status test_jlight_string_my_string_init_copy_returns_copy(char* buffer, int size) {
+    MY_STRING hOriginal = NULL;
+    MY_STRING hCopy = NULL;
+    Status status;
+
+    hOriginal = my_string_init_c_string("I am the original");
+
+    printf("    + Testing my_string_init_copy:\n");
+    printf("      - Expecting copy of 'I am the original' to be made: ");
+    hCopy = my_string_init_copy(hOriginal);
+    if (my_string_compare(hOriginal, hCopy) != 0) {
+        strncpy(buffer, "FAILURE", size);
+        status = FAILURE;
+    }
+    else {
+        strncpy(buffer, "PASSED", size);
+        status = SUCCESS;
+    }
+    my_string_destroy(&hOriginal);
+    my_string_destroy(&hCopy);
+
+    return status;
+}
+
+
+Status test_jlight_string_my_string_swapy_returns_copy(char* buffer, int size) {
+    MY_STRING hLeft = NULL;
+    MY_STRING hRight = NULL;
+    MY_STRING hTestRight = NULL;
+    MY_STRING hTestLeft = NULL;
+    Status status;
+
+    hLeft = my_string_init_c_string("This will be the right string");
+    hRight = my_string_init_c_string("This will be the left string");
+
+    hTestRight = my_string_init_c_string("This will be the right string");
+    hTestLeft = my_string_init_c_string("This will be the left string");
+
+    printf("    + Testing my_string_swap:\n");
+    printf("      - Expecting for the strings to swap: ");
+    my_string_swap(hLeft, hRight);
+    if (my_string_compare(hLeft, hTestLeft) != 0 || my_string_compare(hRight, hTestRight) != 0) {
+        strncpy(buffer, "FAILED", size);
+        status = FAILURE;
+    }
+    else {
+        strncpy(buffer, "PASSED", size);
+        status = SUCCESS;
+    }
+    my_string_destroy(&hLeft); my_string_destroy(&hRight);
+    my_string_destroy(&hTestLeft); my_string_destroy(&hTestRight);
+
+    return status;
 }
