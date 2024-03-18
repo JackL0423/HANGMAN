@@ -3,13 +3,13 @@
 
 #include "status.h"
 #include "generic_vector.h"
-#include "my_String.h"
+#include "./my_string.h"
 
-GENERIC_VECTOR* dictionary(void);
+GENERIC_VECTOR *vector_dictionary(void);
 
 Boolean continue_game(void);
 
-Boolean running_total(void);
+Boolean total_words_remaining(void);
 
 int word_length(void);
 

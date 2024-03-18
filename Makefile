@@ -1,8 +1,8 @@
-BINARY = string_driver
-CODEDIRS =. my_stringLib
+HANGEXE = Hangman
+CODEDIRS = ./src
 
 UNIT_TEST = unit_test 
-TESTDIRS =. test_strings
+TESTDIRS = ./test_strings
 
 INCDIRS =. /headers/
 
@@ -19,17 +19,24 @@ TESTOBJS = $(patsubst %.c, %.o, $(TESTFILES))
 TESTDEP = $(patsubst %.c, %.d, $(TESTFILES))
 
 
-all: $(UNIT_TEST) 
+all: $(HANGEXE) $(UNIT_TEST)
+
+$(HANGEXE): $(OBJECTS)
+	$(CC) -o $@ $^
 
 $(UNIT_TEST): $(OBJECTS) $(TESTOBJS)
 	$(CC) -o $@ $^
 
-%.o:%.c 
+%.o: %.c 
 	$(CC) $(CFLAGS) -c -o $@ $^
+
+# Add memory check
+memhangman:
+	valgrind ./$(HANGEXE)
 
 clean:
 	@echo "cleaning all .o files, string_driver, unit_tests and .d files"
-	rm -rf $(UNIT_TEST) $(OBJECTS) $(DEPFILES) $(TESTOBJS)  $(TESTDEP) test_output.txt
+	rm -rf $(HANGEXE) $(UNIT_TEST) $(OBJECTS) $(DEPFILES) $(TESTOBJS)  $(TESTDEP) test_output.txt
 
 diff:
 	@git status

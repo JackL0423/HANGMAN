@@ -1,9 +1,5 @@
 /.vscode
-my_stringLib/my_string.o
-my_stringLib/my_string.d
-test_string/test_def.d 
-test_string/test_def.o
-test_string/unit_test.d 
-test_string/unit_test.o 
 unit_test
 test_input.txt
+*.o
+*.d

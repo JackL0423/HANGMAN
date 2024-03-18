@@ -12,11 +12,11 @@ GENERIC_VECTOR generic_vector_init_default(
 
 void generic_vector_destroy(GENERIC_VECTOR* phVector);
 
-Status generic_vector_push(GENERIC_VECTOR hVector, ITEM hMY_STRING);
+Status generic_vector_push_back(GENERIC_VECTOR hVector, ITEM hMY_STRING);
 
-Status generic_vector_pop_back(GENERIC_VECTOR hVector, ITEM hMY_STRING);
+Status generic_vector_pop_back(GENERIC_VECTOR hVector);
 
-Status generic_vector_at(GENERIC_VECTOR hVector, int indx);
+ITEM* generic_vector_at(GENERIC_VECTOR hVector, int indx);
 
 Boolean generic_vector_is_empty(GENERIC_VECTOR hVector);
 

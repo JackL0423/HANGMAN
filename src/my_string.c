@@ -167,6 +167,19 @@ Status my_string_push_back(MY_STRING hMy_string, char item) {
     return SUCCESS;
 }
 
+Status my_string_pop_back(MY_STRING hMy_string) {
+    my_string* pString = (my_string*)hMy_string;
+    if (my_string_empty(hMy_string)) {
+        return FAILURE;
+    }
+
+    if (pString->size <= 0) return SUCCESS;
+    
+    pString->size--;
+    return SUCCESS;
+    
+}
+
 
 char* my_string_at(MY_STRING hMy_string, int index) {
     my_string* pString = (my_string*)hMy_string;
@@ -294,7 +307,6 @@ Status get_word_key_value(MY_STRING current_word_family, MY_STRING new_key, MY_S
         if (!my_string_push_back(new_key, *my_string_at(word, indx) == guess ? guess : *my_string_at(current_word_family, indx))) {
             return FAILURE;
         }
-
-        return SUCCESS;
     }
+    return SUCCESS;
 }

@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "hangman_driver.h"
-#include "./my_string.h"
-#include "avl_tree.h"
+#include "./headers/hangman_driver.h"
+#include "./headers/my_string.h"
+#include "./headers/avl_tree.h"
 
 #define MAX_WORD_SIZE 30
 
-GENERIC_VECTOR *dictionary(void) {
+GENERIC_VECTOR *vector_dictionary(void) {
     GENERIC_VECTOR* hgVector = (GENERIC_VECTOR*)malloc(sizeof(GENERIC_VECTOR) * MAX_WORD_SIZE);
     MY_STRING hString = NULL;
     FILE* fp;
@@ -22,7 +22,7 @@ GENERIC_VECTOR *dictionary(void) {
     }
 
     for (indx=0; indx<MAX_WORD_SIZE; indx++) {
-        hgVector[indx] = generic_vector_init_default(my_string_assignment, my_string_destroy);
+        hgVector[indx] = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
         if (hgVector[indx] == NULL) {
             printf("hgVector[%d] is NULL.\n", indx);
             exit(1);
@@ -33,7 +33,7 @@ GENERIC_VECTOR *dictionary(void) {
 
     while (my_string_extraction(hString, fp)) {
         if (my_string_get_size(hString) < MAX_WORD_SIZE) {
-            if (generic_vector_push(hgVector[my_string_get_size(hString)], (ITEM)hString) == FAILURE) {
+            if (generic_vector_push_back(hgVector[my_string_get_size(hString)], (ITEM)hString) == FAILURE) {
                 printf("Failed to pushback generic vector");
                 exit(1);
             }
@@ -77,7 +77,22 @@ int word_length(void) {
     return word_len;
 }
 
-Boolean running_total(void) {
+Boolean total_words_remaining(void) {
+    char c;
+
+    printf("Would you like the total number of words remaining to be showed (for grading)? (y/n) ");
+    scanf("%c", &c);
+    clear_keyboard_buffer();
+
+    c = tolower(c);
+
+    if (!isalpha(c) || (isalpha(c) && c != 'y' && c != 'n')) {
+        return total_words_remaining();
+    }
+    
+    if (c == 'y') return TRUE;
+    if (c == 'n') return FALSE;
+    
     return FALSE;
 }
 

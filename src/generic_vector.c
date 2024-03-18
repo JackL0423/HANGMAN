@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "generic_vector.h"
+
+#include "./headers/generic_vector.h"
 
 
 struct generic_vector {
@@ -97,7 +98,7 @@ Status generic_vector_pop_back(GENERIC_VECTOR hVector) {
     return SUCCESS;
 }
 
-ITEM generic_vector_at(GENERIC_VECTOR hVector, int indx) {
+ITEM* generic_vector_at(GENERIC_VECTOR hVector, int indx) {
     Generic_vector* pVector = (Generic_vector*)hVector;
 
     if (indx < 0 || indx >= pVector->size) {

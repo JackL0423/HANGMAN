@@ -69,8 +69,8 @@ Status avl_tree_push(TREE hMy_tree, MY_STRING key, MY_STRING item) {
         (pMy_tree->root)->right = NULL;
         (pMy_tree->root)->key = my_string_init_c_string(my_string_c_str(key));
 
-        (pMy_tree->root)->data = generic_vector_init_default(my_string_assignment, my_string_destroy);
-        generic_vector_push((pMy_tree->root)->data, item);
+        (pMy_tree->root)->data = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
+        generic_vector_push_back((pMy_tree->root)->data, item);
     }
     else {
         flag = my_string_compare((pMy_tree->root)->key, key);
@@ -78,7 +78,7 @@ Status avl_tree_push(TREE hMy_tree, MY_STRING key, MY_STRING item) {
             avl_tree_push(&((pMy_tree->root)->right), key, item);
         }
         else if (flag == 0) {
-            generic_vector_push((pMy_tree->root)->data, item);
+            generic_vector_push_back((pMy_tree->root)->data, item);
         }
         else if (flag == -1) {
             avl_tree_push(&((pMy_tree->root)->left), key, item);
@@ -97,10 +97,10 @@ GENERIC_VECTOR avl_tree_get_largest_family(TREE hMy_tree, int print_val) {
     int indx;
 
     temp = find_max_family(pMy_tree->root, print_val);
-    return_vector = generic_vector_init_default(my_string_assignment, my_string_destroy);
+    return_vector = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
 
     for (indx=0; indx<generic_vector_get_size(temp); indx++) {
-        generic_vector_push(return_vector, generic_vector_at(temp, indx));
+        generic_vector_push_back(return_vector, generic_vector_at(temp, indx));
     }
     return return_vector;
 }
