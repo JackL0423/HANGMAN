@@ -4,6 +4,7 @@
 
 #include "hangman_driver.h"
 #include "./my_string.h"
+#include "avl_tree.h"
 
 #define MAX_WORD_SIZE 30
 
@@ -48,7 +49,7 @@ GENERIC_VECTOR *dictionary(void) {
 Boolean continue_game(void) {
     char c;
 
-    printf("Play again? (y/n): ");
+    printf("Would you like to play again? (y/n): ");
     scanf("%c", &c);
     clear_keyboard_buffer();
 
@@ -81,11 +82,29 @@ Boolean running_total(void) {
 }
 
 int number_of_guesses(void) {
-    return 0;
+    int guesses;
+    while (guesses <= 0 || guesses > 26) {
+        printf("Enter number of guesses you would like to have: ");
+        scanf("%d", &guesses);
+        clear_keyboard_buffer();
+    }
+    return guesses;
 }
 
 char get_character(void) {
-    return 0;
+
+    char c;
+
+    printf("Guess a character: ");
+    scanf("%c", &c);
+    clear_keyboard_buffer();
+
+    if (isalpha(c)) {
+        c = tolower(c);
+    } else {
+        return get_character();
+    }
+    return c;
 }
 
 void clear_keyboard_buffer(void) {

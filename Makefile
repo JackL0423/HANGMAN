@@ -1,5 +1,5 @@
 BINARY = string_driver
-CODEDIRS =. my_stringLib	 
+CODEDIRS =. my_stringLib
 
 UNIT_TEST = unit_test 
 TESTDIRS =. test_strings
@@ -19,7 +19,7 @@ TESTOBJS = $(patsubst %.c, %.o, $(TESTFILES))
 TESTDEP = $(patsubst %.c, %.d, $(TESTFILES))
 
 
-all: $(UNIT_TEST)
+all: $(UNIT_TEST) 
 
 $(UNIT_TEST): $(OBJECTS) $(TESTOBJS)
 	$(CC) -o $@ $^
@@ -27,12 +27,8 @@ $(UNIT_TEST): $(OBJECTS) $(TESTOBJS)
 %.o:%.c 
 	$(CC) $(CFLAGS) -c -o $@ $^
 
-run:
-	./string_driver
-
-
 clean:
-	@echo "cleaning all .o files, string_driver, and .d files"
+	@echo "cleaning all .o files, string_driver, unit_tests and .d files"
 	rm -rf $(UNIT_TEST) $(OBJECTS) $(DEPFILES) $(TESTOBJS)  $(TESTDEP) test_output.txt
 
 diff:
