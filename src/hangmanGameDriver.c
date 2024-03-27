@@ -28,6 +28,13 @@ void hangman_driver(void) {
 
     //clear_screen?
     
+    
 
+    generic_vector_destroy(dict);
+    generic_vector_destroy(&largest_family);
+    avl_tree_destroy(&hTree);
+    my_string_destroy(&word_key);
+    my_string_destroy(&guess_list);
+    my_string_destroy(&word_family);
 
 }

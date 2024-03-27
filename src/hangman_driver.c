@@ -43,7 +43,7 @@ GENERIC_VECTOR *vector_dictionary(void) {
     my_string_destroy(&hString);
     fclose(fp);
 
-    return hgVector;
+    return (GENERIC_VECTOR)hgVector;
 }
 
 Boolean continue_game(void) {
@@ -66,7 +66,7 @@ Boolean continue_game(void) {
 }
 
 int word_length(void) {
-    int word_len;
+    int word_len = 0;
 
     while (word_len <= 2 || word_len >= MAX_WORD_SIZE) {
         printf("Enter length of word (2-29): ");
@@ -97,7 +97,8 @@ Boolean total_words_remaining(void) {
 }
 
 int number_of_guesses(void) {
-    int guesses;
+    int guesses = 0;
+    
     while (guesses <= 0 || guesses > 26) {
         printf("Enter number of guesses you would like to have: ");
         scanf("%d", &guesses);
