@@ -5,8 +5,9 @@
 #include "./headers/hangman_driver.h"
 #include "./headers/my_string.h"
 #include "./headers/avl_tree.h"
+#include "./headers/status.h"
 
-#define MAX_WORD_SIZE 30
+#define MAX_WORD_SIZE (30)
 
 GENERIC_VECTOR *vector_dictionary(void) {
     GENERIC_VECTOR* hgVector = (GENERIC_VECTOR*)malloc(sizeof(GENERIC_VECTOR) * MAX_WORD_SIZE);
@@ -20,7 +21,7 @@ GENERIC_VECTOR *vector_dictionary(void) {
         printf("Did not open 'dictionary.txt'.\n");
         exit(1);
     }
-
+    
     for (indx=0; indx<MAX_WORD_SIZE; indx++) {
         hgVector[indx] = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
         if (hgVector[indx] == NULL) {
@@ -30,13 +31,12 @@ GENERIC_VECTOR *vector_dictionary(void) {
     }
 
     hString = my_string_init_default();
-
-    while (my_string_extraction(hString, fp)) {
+    if (hString == NULL) exit(1);
+    int jndx = 0;
+    while (my_string_extraction(hString, fp) && jndx < MAX_WORD_SIZE) {
         if (my_string_get_size(hString) < MAX_WORD_SIZE) {
-            if (generic_vector_push_back(hgVector[my_string_get_size(hString)], (ITEM)hString) == FAILURE) {
-                printf("Failed to pushback generic vector");
-                exit(1);
-            }
+            generic_vector_push_back(hgVector[jndx], (ITEM)hString);
+            jndx++;
         }
     }
 
@@ -133,5 +133,5 @@ void clear_keyboard_buffer(void) {
 }
 
 void clear_screen(void) {
-    printf("Research how to clear the screen for windows");
+    printf("Research how to clear the screen for windows.\n");
 }
