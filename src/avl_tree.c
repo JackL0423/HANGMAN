@@ -5,7 +5,6 @@
 #include "./headers/generic.h"
 #include "./headers/avl_tree.h"
 
-typedef struct node Node;
 
 struct node {
     Node* left;
@@ -14,11 +13,9 @@ struct node {
     GENERIC_VECTOR data;
 };
 
-typedef struct node AVL_tree;
-
 //  Fix init funciton.
 TREE avl_tree_init_default(void) {
-    AVL_tree* pRoot = (AVL_tree*)malloc(sizeof(AVL_tree));
+    Node* pRoot = (Node*)malloc(sizeof(Node));
     if (pRoot == NULL) {
         return NULL;
     }
@@ -28,21 +25,31 @@ TREE avl_tree_init_default(void) {
     return (TREE)pRoot;
 }
 
-void avl_tree_destroy(TREE* phRoot) {
-    AVL_tree* pRoot = (AVL_tree*)*phRoot;
+void avl_tree_destroy(TREE* phTree) {
+    Node* pRoot = (Node*)*phTree;
     if (pRoot != NULL) {
-        my_string_destroy(&(pRoot->key));
-        generic_vector_destroy(&(pRoot->data));
-        avl_tree_destroy(pRoot->left);
-        avl_tree_destroy(pRoot->right);
+        avl_tree_node_destroy(pRoot->left);
+        avl_tree_node_destroy(pRoot->right);
+
         free(pRoot);
     }
-    phRoot = NULL;
+    phTree = NULL;
 }
 
+
+void avl_tree_node_destroy(Node* root) {
+    if (root != NULL) {
+        my_string_destroy(root->key);
+        generic_vector_destroy(root->data);
+        avl_tree_node_destroy(root->left);
+        avl_tree_node_destroy(root->right);
+
+        free(root);
+    }
+}
 //  Fix the push function and correct to use the right values.
 Status avl_tree_push(TREE hTree, MY_STRING key, MY_STRING item) {
-    AVL_tree* pRoot = (AVL_tree*)hTree;
+    Node* pRoot = (Node*)hTree;
     int flag;
 
     if (pRoot == NULL) {
@@ -60,6 +67,8 @@ Status avl_tree_push(TREE hTree, MY_STRING key, MY_STRING item) {
 
     //  Need to come up with recursive solution.
     //  Need to also add way for tree to reorginize itself if magnitute >2
+    //  Reference heap lecture for how to reorganize tree based on string_compare
+
    flag = my_string_compare(pRoot->key, key);
     if (flag == 1) {
         avl_tree_push(&(pRoot->right), key, item);
@@ -77,7 +86,7 @@ Status avl_tree_push(TREE hTree, MY_STRING key, MY_STRING item) {
 }
 
 GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree, int print_val) {
-    AVL_tree* pRoot = (AVL_tree*)hTree;
+    Node* pRoot = (Node*)hTree;
     GENERIC_VECTOR return_vector = NULL;
     GENERIC_VECTOR temp;
     int indx;
@@ -91,40 +100,43 @@ GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree, int print_val) {
     return return_vector;
 }
 
-GENERIC_VECTOR find_max_family(Node* root, int print_val) {
+GENERIC_VECTOR find_max_family(TREE hTree, int print_val) {
+    Node* pRoot = (Node*)hTree;
     GENERIC_VECTOR* temp = NULL;
-
-    if (root != NULL) {
-        if (root->left != NULL) {
-            temp = find_max_family(root->left, print_val);
-            if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(root->data)) {
-                temp = root->data;
+    //  S L R
+    if (pRoot != NULL) {
+        if (pRoot->left != NULL) {
+            temp = find_max_family(pRoot->left, print_val);
+            if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(pRoot->data)) {
+                temp = pRoot->data;
             }
         }
-        if (root->right != NULL) {
-            temp = find_max_family(root->right, print_val);
-            if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(root->data)) {
-                temp = root->data;
+        if (pRoot->right != NULL) {
+            temp = find_max_family(pRoot->right, print_val);
+            if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(pRoot->data)) {
+                temp = pRoot->data;
             }
 
-            if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(root->data)) {
-                temp = root->data;
+            if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(pRoot->data)) {
+                temp = pRoot->data;
             }
         }
 
         if (print_val) {
-            my_string_insertion(root->key, stdout);
-            printf(" %d\n", generic_vector_get_size(root->data));
+            my_string_insertion(pRoot->key, stdout);
+            printf(" %d\n", generic_vector_get_size(pRoot->data));
         }
 
         return temp;
     }
+
+    return NULL;
 }
 
 
 //  Make function for balancing factor. 
 int avl_find_tree_magnitude(TREE hTree) {
-    AVL_tree* pRoot = (AVL_tree*)hTree;
+    Node* pRoot = (Node*)hTree;
     if (pRoot != NULL) {
         return 1 + ((avl_find_tree_magnitude(pRoot->left) > avl_find_tree_magnitude(pRoot->right)) ? avl_find_tree_magnitude(pRoot->left):avl_find_tree_magnitude(pRoot->right));
     }
