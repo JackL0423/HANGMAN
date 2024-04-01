@@ -8,13 +8,13 @@ struct generic_vector {
     int size;
     int capacity;
     ITEM* data;
-    ITEM (*fp_init_copy)(ITEM hItem);
-    void (*fp_destroy)(ITEM* phItem);
+    ITEM (*fp_init_copy)(ITEM);
+    void (*fp_destroy)(ITEM*);
 };
 typedef struct generic_vector Generic_vector;
 
 
-GENERIC_VECTOR generic_vector_init_default(ITEM (*fp_init_copy)(ITEM hItem), void (*fp_destroy)(ITEM* phItem)) {
+GENERIC_VECTOR generic_vector_init_default(ITEM (*fp_init_copy)(ITEM), void (*fp_destroy)(ITEM*)) {
     Generic_vector* pVector = (Generic_vector*)malloc(sizeof(Generic_vector));
     int indx;
     if (pVector != NULL) {
@@ -31,7 +31,6 @@ GENERIC_VECTOR generic_vector_init_default(ITEM (*fp_init_copy)(ITEM hItem), voi
             pVector->data[indx] = NULL;
         }
     }
-
     return pVector;
 }
 
@@ -75,6 +74,9 @@ Status generic_vector_push_back(GENERIC_VECTOR hVector, ITEM hItem) {
         for (indx=0; indx < pVector->size; indx++) {
             temp[indx] = pVector->data[indx];
         }
+        for (; indx < pVector->capacity; indx++) {
+            temp[indx] = NULL;
+        }
         free(pVector->data);
         pVector->data = temp;
         pVector->capacity *= 2;
@@ -84,7 +86,6 @@ Status generic_vector_push_back(GENERIC_VECTOR hVector, ITEM hItem) {
     if (pVector->data[pVector->size] == NULL) {
         return FAILURE;
     }
-
     pVector->size++;
     return SUCCESS;
 }
