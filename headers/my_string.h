@@ -160,4 +160,9 @@ MY_STRING my_string_init_copy(MY_STRING hMy_string);
 void my_string_swap(MY_STRING hLeft, MY_STRING hRight);
 
 
+Status get_word_key_value(MY_STRING current_word_family, MY_STRING new_key, MY_STRING word, char guess);
+
+
+Boolean used_character(MY_STRING guess_list, char c);
+
 #endif //HANGMAN_MY_STRING_H
