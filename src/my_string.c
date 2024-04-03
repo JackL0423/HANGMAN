@@ -6,7 +6,7 @@
 #include <string.h>
 #include "./headers/my_string.h"
 
-#define GROWTH_RATE 2
+#define GROWTH_RATE (2)
 
 struct My_string {
     int size;
@@ -130,11 +130,17 @@ Status my_string_extraction(MY_STRING hMy_string, FILE* fp) {
 
 Status my_string_insertion(MY_STRING hMy_string, FILE* fp) {
     my_string* pString = (my_string*)hMy_string;
+    int indx;
+    char c;
 
     if (pString->data == NULL) {
         return FAILURE;
     }
-    fputs(pString->data, fp);
+    else {
+        for (indx=0; indx < my_string_get_size(hMy_string); indx++) {
+            fputs(&(pString->data[indx]), fp);   
+        }
+    }
     
     return SUCCESS;
 }
@@ -309,4 +315,17 @@ Status get_word_key_value(MY_STRING current_word_family, MY_STRING new_key, MY_S
         }
     }
     return SUCCESS;
+}
+
+Boolean used_character(MY_STRING guess_list, char c) {
+    my_string* pString = (my_string*)guess_list;
+    int indx;
+    
+    for (indx=0; indx < my_string_get_size(guess_list); indx++) {
+        if (pString->data[indx] == c) {
+            printf("Letter already guessed.. Try again\n");
+            return TRUE;
+        }
+    }
+    return FALSE;
 }
