@@ -19,7 +19,7 @@ TESTOBJS = $(patsubst %.c, %.o, $(TESTFILES))
 TESTDEP = $(patsubst %.c, %.d, $(TESTFILES))
 
 
-all: $(HANGEXE) $(UNIT_TEST)
+all: $(HANGEXE)
 
 $(HANGEXE): $(OBJECTS)
 	$(CC) -o $@ $^
