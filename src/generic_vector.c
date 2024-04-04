@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./headers/generic_vector.h"
+#include "headers/generic_vector.h"
 
 
 struct generic_vector {
@@ -74,9 +74,10 @@ Status generic_vector_push_back(GENERIC_VECTOR hVector, ITEM hItem) {
         for (indx=0; indx < pVector->size; indx++) {
             temp[indx] = pVector->data[indx];
         }
-        for (; indx < pVector->capacity; indx++) {
+        for (; indx < pVector->capacity * 2; indx++) {
             temp[indx] = NULL;
         }
+        
         free(pVector->data);
         pVector->data = temp;
         pVector->capacity *= 2;

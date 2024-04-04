@@ -36,8 +36,7 @@ void hangman_driver(void) {
     }
     int word_len, number_guesses, running_total, indx;
     char current_guess;
-
-    //clear_screen?
+    
     word_len = word_length();
     number_guesses = number_of_guesses();
     running_total = total_words_remaining();
@@ -46,7 +45,6 @@ void hangman_driver(void) {
         my_string_push_back(word_key, '-');
     }
 
-    //clear_screen?
 
     do {
         printf("You have %d remaining guesses left\nLetters used: ", number_guesses);

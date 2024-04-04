@@ -91,8 +91,8 @@ Node* avl_tree_right_rotate(Node* root) {
     tmp1->right = root;
     root->left = tmp2;
 
-    root->height = 1 + max(avl_tree_height(root->left), avl_tree_height(root->right));
-    tmp1->height = 1 + max(avl_tree_height(tmp1->left), avl_tree_height(tmp1->right));
+    root->height = 1 + avl_tree_max(avl_tree_height(root->left), avl_tree_height(root->right));
+    tmp1->height = 1 + avl_tree_max(avl_tree_height(tmp1->left), avl_tree_height(tmp1->right));
 
     return tmp1;
 }
@@ -104,54 +104,52 @@ Node* avl_tree_left_rotate(Node* root) {
     tmp1->left = root;
     root->right = tmp2;
 
-    root->height = 1 + max(avl_tree_height(root->left), avl_tree_height(root->right));
-    tmp1->height = 1 + max(avl_tree_height(tmp1->left), avl_tree_height(tmp1->right));
+    root->height = 1 + avl_tree_max(avl_tree_height(root->left), avl_tree_height(root->right));
+    tmp1->height = 1 + avl_tree_max(avl_tree_height(tmp1->left), avl_tree_height(tmp1->right));
 
     return tmp1;
 }
 
 //  Fix the push function and correct to use the right values.
-Status avl_tree_push(TREE hTree, MY_STRING key, MY_STRING item) {
-    Node* pRoot = (Node*)hTree;
+TREE avl_tree_push(TREE* phTree, MY_STRING key, MY_STRING item) {
+    Node** pRoot = (Node**)phTree;
     int balance;
 
-    if (pRoot == NULL) {
+    if (*pRoot == NULL) {
         return avl_tree_new_node(key, item);
     }
 
-    if (my_string_compare(key, pRoot->key) < 0) {
-        pRoot->left = avl_tree_push(pRoot->left, key, item);
+    if (my_string_compare(key, (*pRoot)->key) < 0) {
+        (*pRoot)->left = avl_tree_push((TREE)&((*pRoot)->left), key, item);
     }
-    else if (my_string_compare(key, pRoot->key) > 0) {
-        pRoot->right = avl_tree_push(pRoot->right, key, item);
-    }
-    else {
-        return pRoot;
+    else if (my_string_compare(key, (*pRoot)->key) > 0) {
+        (*pRoot)->right = avl_tree_push((TREE)&((*pRoot)->right), key, item);
     }
 
-    pRoot->height = 1 + max(avl_tree_height(pRoot->left), avl_tree_height(pRoot->right));
+    (*pRoot)->height = 1 + avl_tree_max(avl_tree_height((*pRoot)->left), avl_tree_height((*pRoot)->right));
 
-    balance = avl_tree_get_balance(pRoot);
+    balance = avl_tree_get_balance(*pRoot);
 
-    if (balance > 1 && my_string_compare(key, pRoot->left->key) < 0) {
-        return avl_tree_right_rotate(pRoot);
+    if (balance > 1 && my_string_compare(key, (*pRoot)->left->key) < 0) {
+        return avl_tree_right_rotate(*pRoot);
     }
 
-    if (balance < -1 && my_string_compare(key, pRoot->right>key) > 0) {
-        return avl_tree_left_rotate(pRoot);
+    if (balance < -1 && my_string_compare(key, (*pRoot)->right->key) > 0) {
+        return avl_tree_left_rotate(*pRoot);
     }
 
-    if (balance > 1 && my_string_compare(key, pRoot->left->key) > 0) {
-        pRoot->left = avl_tree_left_rotate(pRoot->left);
-        return avl_tree_right_rotate(pRoot);
+    if (balance > 1 && my_string_compare(key, (*pRoot)->left->key) > 0) {
+        (*pRoot)->left = avl_tree_left_rotate((*pRoot)->left);
+        return avl_tree_right_rotate(*pRoot);
     }
 
-    if (balance < -1 && my_string_compare(key, pRoot->right->key) < 0) {
-        pRoot->right = avl_tree_right_rotate(pRoot->right);
-        return avl_tree_left_rotate(pRoot);
+    if (balance < -1 && my_string_compare(key, (*pRoot)->right->key) < 0) {
+        (*pRoot)->right = avl_tree_right_rotate((*pRoot)->right);
+        return avl_tree_left_rotate(*pRoot);
+        //status = SUCCESS;
     }
 
-    return pRoot;
+    return *pRoot;
     /*
     int flag;
 
