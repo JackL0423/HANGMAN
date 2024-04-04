@@ -11,6 +11,7 @@ struct node {
     Node* right;
     MY_STRING key;
     GENERIC_VECTOR data;
+    int height;
 };
 
 //  Fix init funciton.
@@ -21,6 +22,7 @@ TREE avl_tree_init_default(void) {
     }
     pRoot->left = NULL;
     pRoot->right = NULL;
+    pRoot->height = 0;
 
     return (TREE)pRoot;
 }
@@ -36,7 +38,6 @@ void avl_tree_destroy(TREE* phTree) {
     phTree = NULL;
 }
 
-
 void avl_tree_node_destroy(Node* root) {
     if (root != NULL) {
         my_string_destroy(root->key);
@@ -47,9 +48,111 @@ void avl_tree_node_destroy(Node* root) {
         free(root);
     }
 }
+
+int avl_tree_height(TREE hTree) {
+    Node* pRoot = (Node*)hTree;
+    if (pRoot == NULL) {
+        return 0;
+    }
+    return pRoot->height;
+}
+
+int avl_tree_max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int avl_tree_get_balance(TREE hTree) {
+    Node* pRoot = (Node*)hTree;
+    if (pRoot == NULL) {
+        return 0;
+    }
+    return avl_tree_height(pRoot->left) - avl_tree_height(pRoot->right);
+}
+
+Node* avl_tree_new_node(MY_STRING key, MY_STRING item) {
+    Node* pRoot = (Node*)malloc(sizeof(Node));
+    if (pRoot == NULL) {
+        return NULL;
+    }
+    pRoot->left = NULL;
+    pRoot->right = NULL;
+    pRoot->key = my_string_init_c_string(my_string_c_str(key));
+    pRoot->data = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
+    generic_vector_push_back(pRoot->data, item);
+    pRoot->height = 1;
+
+    return pRoot;
+}
+
+Node* avl_tree_right_rotate(Node* root) {
+    Node* tmp1 = root->left;
+    Node* tmp2 = tmp1->right;
+
+    tmp1->right = root;
+    root->left = tmp2;
+
+    root->height = 1 + max(avl_tree_height(root->left), avl_tree_height(root->right));
+    tmp1->height = 1 + max(avl_tree_height(tmp1->left), avl_tree_height(tmp1->right));
+
+    return tmp1;
+}
+
+Node* avl_tree_left_rotate(Node* root) {
+    Node* tmp1 = root->right;
+    Node* tmp2 = tmp1->left;
+
+    tmp1->left = root;
+    root->right = tmp2;
+
+    root->height = 1 + max(avl_tree_height(root->left), avl_tree_height(root->right));
+    tmp1->height = 1 + max(avl_tree_height(tmp1->left), avl_tree_height(tmp1->right));
+
+    return tmp1;
+}
+
 //  Fix the push function and correct to use the right values.
 Status avl_tree_push(TREE hTree, MY_STRING key, MY_STRING item) {
     Node* pRoot = (Node*)hTree;
+    int balance;
+
+    if (pRoot == NULL) {
+        return avl_tree_new_node(key, item);
+    }
+
+    if (my_string_compare(key, pRoot->key) < 0) {
+        pRoot->left = avl_tree_push(pRoot->left, key, item);
+    }
+    else if (my_string_compare(key, pRoot->key) > 0) {
+        pRoot->right = avl_tree_push(pRoot->right, key, item);
+    }
+    else {
+        return pRoot;
+    }
+
+    pRoot->height = 1 + max(avl_tree_height(pRoot->left), avl_tree_height(pRoot->right));
+
+    balance = avl_tree_get_balance(pRoot);
+
+    if (balance > 1 && my_string_compare(key, pRoot->left->key) < 0) {
+        return avl_tree_right_rotate(pRoot);
+    }
+
+    if (balance < -1 && my_string_compare(key, pRoot->right>key) > 0) {
+        return avl_tree_left_rotate(pRoot);
+    }
+
+    if (balance > 1 && my_string_compare(key, pRoot->left->key) > 0) {
+        pRoot->left = avl_tree_left_rotate(pRoot->left);
+        return avl_tree_right_rotate(pRoot);
+    }
+
+    if (balance < -1 && my_string_compare(key, pRoot->right->key) < 0) {
+        pRoot->right = avl_tree_right_rotate(pRoot->right);
+        return avl_tree_left_rotate(pRoot);
+    }
+
+    return pRoot;
+    /*
     int flag;
 
     if (pRoot == NULL) {
@@ -83,6 +186,7 @@ Status avl_tree_push(TREE hTree, MY_STRING key, MY_STRING item) {
         return FAILURE;
     }
     return SUCCESS;
+    */
 }
 
 GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree, int print_val) {
@@ -135,6 +239,7 @@ GENERIC_VECTOR find_max_family(TREE hTree, int print_val) {
 
 
 //  Make function for balancing factor. 
+/*
 int avl_find_tree_magnitude(TREE hTree) {
     Node* pRoot = (Node*)hTree;
     if (pRoot != NULL) {
@@ -143,3 +248,4 @@ int avl_find_tree_magnitude(TREE hTree) {
 
     return 0;
 }
+*/
