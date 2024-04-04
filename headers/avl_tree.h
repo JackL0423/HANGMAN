@@ -28,7 +28,7 @@ Node* avl_tree_right_rotate(Node* root);
 
 Node* avl_tree_left_rotate(Node* root);
 
-Status avl_tree_push(TREE* phTree, MY_STRING key, MY_STRING item);
+TREE avl_tree_push(TREE* phTree, MY_STRING key, MY_STRING item);
 
 GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree, int print_val);
 
