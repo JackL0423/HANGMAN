@@ -22,7 +22,7 @@ GENERIC_VECTOR *vector_dictionary(void) {
         exit(1);
     }
     
-    for (indx=0; indx<MAX_WORD_SIZE; indx++) {
+    for (indx=0; indx < MAX_WORD_SIZE; indx++) {
         hgVector[indx] = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
         if (hgVector[indx] == NULL) {
             printf("hgVector[%d] is NULL.\n", indx);
@@ -97,13 +97,14 @@ Boolean total_words_remaining(void) {
 }
 
 int number_of_guesses(void) {
-    int guesses = 0;
+    int guesses;
     
-    while (guesses <= 0 || guesses > 26) {
+    do {
         printf("Enter number of guesses you would like to have: ");
         scanf("%d", &guesses);
         clear_keyboard_buffer();
-    }
+    } while (guesses <= 0 || guesses > 26);
+
     return guesses;
 }
 
@@ -111,7 +112,7 @@ char get_character(void) {
 
     char c;
 
-    printf("Guess a character: ");
+    printf("\nGuess a character: ");
     scanf("%c", &c);
     clear_keyboard_buffer();
 

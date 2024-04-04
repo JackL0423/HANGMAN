@@ -131,7 +131,6 @@ Status my_string_extraction(MY_STRING hMy_string, FILE* fp) {
 Status my_string_insertion(MY_STRING hMy_string, FILE* fp) {
     my_string* pString = (my_string*)hMy_string;
     int indx;
-    char c;
 
     if (pString->data == NULL) {
         return FAILURE;
@@ -179,10 +178,12 @@ Status my_string_pop_back(MY_STRING hMy_string) {
         return FAILURE;
     }
 
-    if (pString->size <= 0) return SUCCESS;
+    if (pString->size >= 0) {
+        pString->size--;
+        return SUCCESS;
+    }
     
-    pString->size--;
-    return SUCCESS;
+    return FAILURE;
     
 }
 
@@ -241,7 +242,7 @@ Status my_string_concat(MY_STRING hResult, MY_STRING hAppend) {
 
 Boolean my_string_empty(MY_STRING hMy_string) {
     my_string* pString = (my_string*)hMy_string;
-    return (pString->data == NULL) ? TRUE : FALSE;
+    return (pString->size <= 0) ? TRUE : FALSE;
 }
 
 
@@ -306,10 +307,13 @@ void my_string_swap(MY_STRING hLeft, MY_STRING hRight) {
 Status get_word_key_value(MY_STRING current_word_family, MY_STRING new_key, MY_STRING word, char guess) {
     int indx;
     while (!my_string_empty(new_key)) {
+        printf("Before pop...\n");
         my_string_pop_back(new_key);
+        printf("After pop...\n");
     }
 
     for (indx=0; indx<my_string_get_size(word); indx++) {
+        printf("for loop in word_key.\n");
         if (!my_string_push_back(new_key, *my_string_at(word, indx) == guess ? guess : *my_string_at(current_word_family, indx))) {
             return FAILURE;
         }
