@@ -2,7 +2,8 @@
 #include <stdlib.h>
 
 #include "headers/generic_vector.h"
-
+#include "headers/my_string.h"
+#include "headers/avl_tree.h"
 
 struct generic_vector {
     int size;
@@ -65,7 +66,7 @@ Status generic_vector_push_back(GENERIC_VECTOR hVector, ITEM hItem) {
     ITEM* temp;
     int indx;
 
-    if (generic_vector_get_size(hVector) >= generic_vector_get_capacity(hVector)) {
+    if (generic_vector_get_size(hVector)+1 >= generic_vector_get_capacity(hVector)) {
         temp = (ITEM*)malloc(sizeof(ITEM) * pVector->capacity * 2);
         if (temp == NULL) {
             return FAILURE;
@@ -75,7 +76,7 @@ Status generic_vector_push_back(GENERIC_VECTOR hVector, ITEM hItem) {
             temp[indx] = pVector->data[indx];
         }
         for (; indx < pVector->capacity * 2; indx++) {
-            temp[indx] = NULL;
+            temp[indx] = generic_vector_init_default(my_string_init_copy, my_string_destroy);
         }
         
         free(pVector->data);
@@ -108,4 +109,39 @@ ITEM* generic_vector_at(GENERIC_VECTOR hVector, int indx) {
     }
 
     return pVector->data[indx];
+}
+
+GENERIC_VECTOR get_largest_bin(GENERIC_VECTOR largest_family, MY_STRING work_key, char guess) {
+    MY_STRING key = NULL;
+    TREE word_bin = NULL;
+    Node* largest_bin_node = NULL;
+    MY_STRING largest_bin_key = NULL;
+   
+    word_bin = avl_tree_init_default();
+    if (word_bin == NULL) exit(1);
+
+    key = my_string_init_default();
+    if (key == NULL) exit(1);
+
+    int indx;
+    for (indx=0; indx < generic_vector_get_size(largest_family); indx++) {
+        //  Watch for issue with get_key_word_value
+        get_word_key_value(work_key, key, generic_vector_at(largest_family, indx), guess);
+        word_bin = avl_tree_push(word_bin, key, generic_vector_at(largest_family, indx));
+
+        while (!my_string_empty(key)) {
+            my_string_pop_back(key);
+        }
+    }
+
+    //  How do I find the largest bin of a tree?
+   largest_bin_node = avl_tree_find_max_node(word_bin);
+   largest_bin_key = avl_tree_node_key(largest_bin_node);
+   
+    my_string_assignment(work_key, largest_bin_key);
+
+    avl_tree_destroy(&word_bin);
+    my_string_destroy(&key);
+
+    return largest_family;
 }

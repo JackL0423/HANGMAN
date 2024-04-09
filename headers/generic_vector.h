@@ -3,6 +3,7 @@
 
 #include "status.h"
 #include "generic.h"
+#include "my_string.h"
 
 typedef void* GENERIC_VECTOR;
 
@@ -23,5 +24,7 @@ Boolean generic_vector_is_empty(GENERIC_VECTOR hVector);
 int generic_vector_get_size(GENERIC_VECTOR hVector);
 
 int generic_vector_get_capacity(GENERIC_VECTOR hVector);
+
+GENERIC_VECTOR get_largest_bin(GENERIC_VECTOR largest_family, MY_STRING work_key, char guess);
 
 #endif//GENERIC_VECTOR_H
