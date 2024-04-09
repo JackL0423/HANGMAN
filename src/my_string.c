@@ -95,34 +95,22 @@ int my_string_compare(MY_STRING hLeft_string, MY_STRING hRight_string) {
 
 Status my_string_extraction(MY_STRING hMy_string, FILE* fp) {
     my_string* pString = (my_string*)hMy_string;    
-    char word[100];
-    char* temp;
+    char word[30];
+    char c;
+    //char* temp;
     int i;
-
+    pString->size = 0;
     while (fscanf(fp, "%s", word) != EOF) {
-        
-        if ((int)strlen(word) >= my_string_get_capacity(hMy_string)) {
-            temp = (char*)malloc(sizeof(char) * pString->capacity * GROWTH_RATE);
-            if (temp == NULL) {
-                return FAILURE;
+        if (strlen(word) > 1) {
+            for (i=0; i < (int)strlen(word); i++) {
+                c = word[i];
+                if (c != ' ' && c != '\n' && c != EOF) {
+                    my_string_push_back(hMy_string, c);
+                }
             }
-
-            for (i=0; i < pString->size; i++) {
-                temp[i] = pString->data[i];
-            }
-            free(pString->data);
-            strcpy(temp, word);
-            pString->data = temp;
-            pString->capacity *= GROWTH_RATE;
-            pString->size = strlen(word);
-
+            return SUCCESS;
         }
-        strcpy(pString->data, word);
-        
-        return SUCCESS;
-
     }
-
 
     return FAILURE;
 }
@@ -301,14 +289,16 @@ void my_string_swap(MY_STRING hLeft, MY_STRING hRight) {
 
 Status get_word_key_value(MY_STRING current_word_family, MY_STRING new_key, MY_STRING word, char guess) {
     int indx;
-    while (my_string_empty(new_key) == FALSE) {
-        my_string_pop_back(new_key);
-    }
 
     for (indx=0; indx<my_string_get_size(word); indx++) {
-        if (!my_string_push_back(new_key, *my_string_at(word, indx) == guess ? guess : *my_string_at(current_word_family, indx))) {
-            return FAILURE;
-        }
+        if (*my_string_at(word, indx) == guess)
+		{
+			my_string_push_back(new_key, guess);
+		}
+		else
+		{
+			my_string_push_back(new_key, *my_string_at(current_word_family, indx));
+		}
     }
     return SUCCESS;
 }
