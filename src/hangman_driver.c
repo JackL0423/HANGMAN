@@ -9,8 +9,7 @@
 
 #define MAX_WORD_SIZE (30)
 
-GENERIC_VECTOR *vector_dictionary(void) {
-    GENERIC_VECTOR* hgVector = (GENERIC_VECTOR*)malloc(sizeof(GENERIC_VECTOR) * MAX_WORD_SIZE);
+void vector_dictionary(GENERIC_VECTOR dictionary[]) {
     MY_STRING hString = NULL;
     FILE* fp;
 
@@ -21,29 +20,24 @@ GENERIC_VECTOR *vector_dictionary(void) {
         printf("Did not open 'dictionary.txt'.\n");
         exit(1);
     }
+
+    hString = my_string_init_default();
+    if (hString == NULL) exit(1);
     
-    for (indx=0; indx < MAX_WORD_SIZE; indx++) {
-        hgVector[indx] = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
-        if (hgVector[indx] == NULL) {
+    for (indx=1; indx < MAX_WORD_SIZE; indx++) {
+        dictionary[indx] = generic_vector_init_default((ITEM)my_string_init_copy, my_string_destroy);
+        if (dictionary[indx] == NULL) {
             printf("hgVector[%d] is NULL.\n", indx);
             exit(1);
         }
     }
 
-    hString = my_string_init_default();
-    if (hString == NULL) exit(1);
-    int jndx = 0;
-    while (my_string_extraction(hString, fp) && jndx < MAX_WORD_SIZE) {
-        if (my_string_get_size(hString) < MAX_WORD_SIZE) {
-            generic_vector_push_back(hgVector[jndx], (ITEM)hString);
-            jndx++;
-        }
+    while (my_string_extraction(hString, fp)) {
+        generic_vector_push_back(dictionary[my_string_get_size(hString)], hString);
     }
 
     my_string_destroy(&hString);
     fclose(fp);
-
-    return (GENERIC_VECTOR)hgVector;
 }
 
 Boolean continue_game(void) {

@@ -5,7 +5,7 @@
 #include "generic_vector.h"
 #include "./my_string.h"
 
-GENERIC_VECTOR *vector_dictionary(void);
+void vector_dictionary(GENERIC_VECTOR dictionary[]);
 
 Boolean continue_game(void);
 
