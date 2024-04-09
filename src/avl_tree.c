@@ -22,6 +22,8 @@ TREE avl_tree_init_default(void) {
     }
     pRoot->left = NULL;
     pRoot->right = NULL;
+    pRoot->key = my_string_init_default();
+    pRoot->data = generic_vector_init_default(my_string_init_copy, my_string_destroy);
     pRoot->height = 0;
 
     return (TREE)pRoot;
@@ -33,17 +35,20 @@ void avl_tree_destroy(TREE* phTree) {
         avl_tree_node_destroy(pRoot->left);
         avl_tree_node_destroy(pRoot->right);
 
-        free(pRoot);
+        my_string_destroy(&(pRoot->key));
+        generic_vector_destroy(&(pRoot->data));
+
+        //free(pRoot);
     }
     phTree = NULL;
 }
 
 void avl_tree_node_destroy(Node* root) {
     if (root != NULL) {
-        my_string_destroy(root->key);
-        generic_vector_destroy(root->data);
         avl_tree_node_destroy(root->left);
         avl_tree_node_destroy(root->right);
+        my_string_destroy(&(root->key));
+        generic_vector_destroy(&(root->data));
 
         free(root);
     }
@@ -77,7 +82,7 @@ Node* avl_tree_new_node(MY_STRING key, MY_STRING item) {
     pRoot->left = NULL;
     pRoot->right = NULL;
     pRoot->key = my_string_init_c_string(my_string_c_str(key));
-    pRoot->data = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
+    pRoot->data = generic_vector_init_default((ITEM)my_string_init_copy, my_string_destroy);
     generic_vector_push_back(pRoot->data, item);
     pRoot->height = 1;
 
@@ -111,90 +116,55 @@ Node* avl_tree_left_rotate(Node* root) {
 }
 
 //  Fix the push function and correct to use the right values.
-TREE avl_tree_push(TREE* phTree, MY_STRING key, MY_STRING item) {
-    Node** pRoot = (Node**)phTree;
+TREE avl_tree_push(TREE phTree, MY_STRING key, MY_STRING item) {
+    Node* pRoot = (Node*)phTree;
     int balance;
 
-    if (*pRoot == NULL) {
+    if (pRoot == NULL) {
         return avl_tree_new_node(key, item);
     }
 
-    if (my_string_compare(key, (*pRoot)->key) < 0) {
-        (*pRoot)->left = avl_tree_push((TREE)&((*pRoot)->left), key, item);
+    if (my_string_compare(key, pRoot->key) < 0) {
+        pRoot->left = avl_tree_push((pRoot->left), key, item);
     }
-    else if (my_string_compare(key, (*pRoot)->key) > 0) {
-        (*pRoot)->right = avl_tree_push((TREE)&((*pRoot)->right), key, item);
-    }
-
-    (*pRoot)->height = 1 + avl_tree_max(avl_tree_height((*pRoot)->left), avl_tree_height((*pRoot)->right));
-
-    balance = avl_tree_get_balance(*pRoot);
-
-    if (balance > 1 && my_string_compare(key, (*pRoot)->left->key) < 0) {
-        return avl_tree_right_rotate(*pRoot);
+    else if (my_string_compare(key, pRoot->key) > 0) {
+        pRoot->right = avl_tree_push((pRoot->right), key, item);
     }
 
-    if (balance < -1 && my_string_compare(key, (*pRoot)->right->key) > 0) {
-        return avl_tree_left_rotate(*pRoot);
+    pRoot->height = 1 + avl_tree_max(avl_tree_height(pRoot->left), avl_tree_height(pRoot->right));
+
+    balance = avl_tree_get_balance(pRoot);
+
+    if (balance > 1 && my_string_compare(key, pRoot->left->key) < 0) {
+        return avl_tree_right_rotate(pRoot);
     }
 
-    if (balance > 1 && my_string_compare(key, (*pRoot)->left->key) > 0) {
-        (*pRoot)->left = avl_tree_left_rotate((*pRoot)->left);
-        return avl_tree_right_rotate(*pRoot);
+    if (balance < -1 && my_string_compare(key, pRoot->right->key) > 0) {
+        return avl_tree_left_rotate(pRoot);
     }
 
-    if (balance < -1 && my_string_compare(key, (*pRoot)->right->key) < 0) {
-        (*pRoot)->right = avl_tree_right_rotate((*pRoot)->right);
-        return avl_tree_left_rotate(*pRoot);
+    if (balance > 1 && my_string_compare(key, pRoot->left->key) > 0) {
+        pRoot->left = avl_tree_left_rotate(pRoot->left);
+        return avl_tree_right_rotate(pRoot);
+    }
+
+    if (balance < -1 && my_string_compare(key, pRoot->right->key) < 0) {
+        pRoot->right = avl_tree_right_rotate(pRoot->right);
+        return avl_tree_left_rotate(pRoot);
         //status = SUCCESS;
     }
 
-    return *pRoot;
-    /*
-    int flag;
-
-    if (pRoot == NULL) {
-        pRoot = (Node*)malloc(sizeof(Node));
-        if (pRoot == NULL) {
-            return FAILURE;
-        }
-        pRoot->left = NULL;
-        pRoot->right = NULL;
-        pRoot->key = my_string_init_c_string(my_string_c_str(key));
-
-        pRoot->data = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
-        generic_vector_push_back(pRoot->data, item);
-    }
-
-    //  Need to come up with recursive solution.
-    //  Need to also add way for tree to reorginize itself if magnitute >2
-    //  Reference heap lecture for how to reorganize tree based on string_compare
-
-   flag = my_string_compare(pRoot->key, key);
-    if (flag == 1) {
-        avl_tree_push(&(pRoot->right), key, item);
-    }
-    else if (flag == 0) {
-        generic_vector_push_back(pRoot->data, item);
-    }
-    else if (flag == -1) {
-        avl_tree_push(&(pRoot->left), key, item);
-    }
-    else {
-        return FAILURE;
-    }
-    return SUCCESS;
-    */
+    return pRoot;
 }
 
-GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree, int print_val) {
+GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree) {
     Node* pRoot = (Node*)hTree;
     GENERIC_VECTOR return_vector = NULL;
     GENERIC_VECTOR temp;
     int indx;
 
-    temp = find_max_family(pRoot, print_val);
-    return_vector = generic_vector_init_default((ITEM)my_string_assignment, my_string_destroy);
+    temp = find_max_family(pRoot);
+    return_vector = generic_vector_init_default((ITEM)my_string_init_copy, my_string_destroy);
 
     for (indx=0; indx<generic_vector_get_size(temp); indx++) {
         generic_vector_push_back(return_vector, generic_vector_at(temp, indx));
@@ -202,19 +172,20 @@ GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree, int print_val) {
     return return_vector;
 }
 
-GENERIC_VECTOR find_max_family(TREE hTree, int print_val) {
+//  Might delete.
+GENERIC_VECTOR find_max_family(TREE hTree) {
     Node* pRoot = (Node*)hTree;
     GENERIC_VECTOR* temp = NULL;
     //  S L R
     if (pRoot != NULL) {
         if (pRoot->left != NULL) {
-            temp = find_max_family(pRoot->left, print_val);
+            temp = find_max_family(pRoot->left);
             if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(pRoot->data)) {
                 temp = pRoot->data;
             }
         }
         if (pRoot->right != NULL) {
-            temp = find_max_family(pRoot->right, print_val);
+            temp = find_max_family(pRoot->right);
             if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(pRoot->data)) {
                 temp = pRoot->data;
             }
@@ -222,11 +193,6 @@ GENERIC_VECTOR find_max_family(TREE hTree, int print_val) {
             if (temp == NULL || generic_vector_get_size(temp) < generic_vector_get_size(pRoot->data)) {
                 temp = pRoot->data;
             }
-        }
-
-        if (print_val) {
-            my_string_insertion(pRoot->key, stdout);
-            printf(" %d\n", generic_vector_get_size(pRoot->data));
         }
 
         return temp;
@@ -235,15 +201,15 @@ GENERIC_VECTOR find_max_family(TREE hTree, int print_val) {
     return NULL;
 }
 
-
-//  Make function for balancing factor. 
-/*
-int avl_find_tree_magnitude(TREE hTree) {
-    Node* pRoot = (Node*)hTree;
-    if (pRoot != NULL) {
-        return 1 + ((avl_find_tree_magnitude(pRoot->left) > avl_find_tree_magnitude(pRoot->right)) ? avl_find_tree_magnitude(pRoot->left):avl_find_tree_magnitude(pRoot->right));
+Node* avl_tree_find_max_node(TREE word_bin) {
+    Node* pRoot = (Node*)word_bin;
+    while (pRoot->right != NULL) {
+        pRoot = pRoot->right;
     }
 
-    return 0;
+    return pRoot;
 }
-*/
+
+MY_STRING avl_tree_node_key(Node* largest_bin_node) {
+    return largest_bin_node->key;
+}

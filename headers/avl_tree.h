@@ -28,12 +28,14 @@ Node* avl_tree_right_rotate(Node* root);
 
 Node* avl_tree_left_rotate(Node* root);
 
-TREE avl_tree_push(TREE* phTree, MY_STRING key, MY_STRING item);
+TREE avl_tree_push(TREE phTree, MY_STRING key, MY_STRING item);
 
-GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree, int print_val);
+GENERIC_VECTOR avl_tree_get_largest_family(TREE hTree);
 
-GENERIC_VECTOR find_max_family(TREE hTree, int print_val);
+GENERIC_VECTOR find_max_family(TREE hTree);
 
-int avl_find_tree_magnitude(TREE hTree); 
+Node* avl_tree_find_max_node(TREE word_bin);
+
+MY_STRING avl_tree_node_key(Node* largest_bin_node);
 
 #endif//AVL_TREE_H
